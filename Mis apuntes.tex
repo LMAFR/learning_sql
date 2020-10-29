@@ -1,0 +1,234 @@
+\documentclass[10pt, oneside]{article} 
+\usepackage{amsmath, amsthm, amssymb, calrsfs, wasysym, verbatim, bbm, color, graphics, geometry}
+
+\geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}  
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Cdot}{\boldsymbol{\cdot}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{conv}{Convention}
+\newtheorem{rem}{Remark}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+
+
+\title{Programming in SQL\\ Notes}
+\author{Alejandro Florido Reyes}
+\date{Academic Year 2019-2020}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\vspace{.25in}
+
+\section{Queries}
+
+Queries are the method that we will use to obtain information from a database. A query is a set of lines written in SQL code.
+
+\subsection{Basic Syntax to make SQL queries}
+
+Firstly, I will write the essential sentence we have to keep in mind while we are writing a query:
+\begin{center}
+	SELECT AGGREGATE\_FUNCTION(column\_name1), ...\\
+	FROM (register\_name1) \\
+	JOIN (register\_name2) ON (column1\_register1=column3\_register2, ...), ... \\
+	WHERE restriction\_1 AND/OR restriction\_2 ... ORDER BY column\_name1, ... \\
+	HAVING restriction\_aggregate1 AND/OR ... GROUP BY column\_name1, ... \\
+\end{center}
+
+\color{blue}Note. \color{black}Notice that we are separating the different parts of the query to make it easier to read and understand. In practice, do this is NOT a problem, because the software will ignore weird whitespaces and separate lines like these. Don't be afraid of use it.
+\\
+
+	Like we can see in the previous sentence, a SQL query is similar to an order that we pronounce with a very specific words. First of all, you SELECT what information you want to see when you RUN this QUERY, then you specify the registry (place, file) FROM where you will obtain that information (if there are several registries, you will have to JOIN those registries in the right way, counting ON possible identical columns among those). 
+	\\
+	
+	Once you have chosen the registries and the columns appropriate for your task, frequently, it will be necessary to apply some RESTRICTIONS to receive only the information you want (WHERE) and, if you want to be clearer, could be useful ORDER the results BY some specific COLUMNS. 
+	\\
+	
+	Finally, if you used some AGGREGATE\_FUNCTION at the beginning, you can add specific restrictions for them after type HAVING and, overall, you will have to GROUP the resulting columns BY some of the original columns.
+	\\
+	
+	\color{blue} Note. \color{black}You could type any command, name or column in uppercase or lowercase, it won't change the meaning of the query.
+
+\subsection{SELECT}
+
+SELECT can do far more than simply retrieve and display data, but that is the basic function of this statement.
+\\
+
+If you want to pull data from a table and then display the results you should write:
+
+\begin{center}
+	SELECT * FROM table\_name
+\end{center}
+
+The symbol * means "All columns" but if you want to put a certain columns, you only have to write the names of those columns separated by comma (enumerate it).
+Example: 
+
+\begin{center}
+	SELECT column1\_name, column2\_name, column3\_name FROM ...
+\end{center}
+
+\color{blue}Note. \color{black}One important detail is that it is useful to get used to write the semicolon (;) after a COMPLETE SQL statement (for example, the last two examples), because it's needed if you want to run several statements in the same script (for example, in a script to add data one to one in a table).
+
+\begin{itemize}
+	\item \textbf{Calculations, another functionality of SELECT statement.}
+	
+	You can do calculations on the columns and include them in your query result, for example:
+	
+	\begin{center}
+		SELECT column\_name * 1.5 AS new\_column\_name, ... FROM...
+	\end{center}
+
+	These calculated columns are not stored in the database, but rather calculated and displayed to us every time we run this query.
+	
+	\item \textbf{Put a name to your new column (or replace an old one).}
+	
+	Notice that here we used AS to choose a name for the new column we have just created.You can use this statement to replace the name of a column in the results. 
+	 
+	 \color{blue}Note. \color{black}One last thing: if you will write a name with several words, use underscore(\_) instead of "space" ( ) to avoid errors.
+	 
+	\item \textbf{Some functions you could use while you are calculating.}
+	
+	\begin{itemize}
+		\item round(x,y) 
+		\\
+		
+		This function consist of 2 variables, x, which is the number we want to round and y, which is the number of decimal places to round to.
+		
+		\item 
+		
+	\end{itemize}
+	
+	\item \textbf{Basic mathematical operators.}
+	
+	They are essentially the same you use in MATLAB, but there is a new one. \% divides two numbers, but \textbf{returns the remainder}.
+	\\
+	Not equal could be typed like != or <>, in general. Microsoft Access and IBM DB2 only allow the use of <>.
+	
+    \item \textbf{Text concatenation}
+    
+    You can use it to join different pieces of text, creating an unique sentence as consequence. You can add numbers (they will be transformed in text when the operator finds them) and can add text manually using ' '. A example would be:
+    
+    \begin{center}
+    	SELECT street\_address $\vert$$\vert$ ' ' $\vert$$\vert$ city $\vert$$\vert$ ', ' $\vert$$\vert$ state $\vert$$\vert$ ' ' $\vert$$\vert$ zip AS Ship\_address FROM customer
+    \end{center}
+    
+    This query would return a column named "Ship address" whose rows (each of them) would give to the user the street, city, state and zip (postal) code of one of the customers.
+    
+    \color{blue}Note. \color{black}Here we have used || to concatenate but MySQL and others require using a CONCAT() function.
+	
+\end{itemize}
+
+\subsection{WHERE}
+
+The statement where acts like a filter, we add conditions after the clause WHERE and then those conditions reduce the number of dates we receive from the query.
+
+\begin{itemize}
+	
+	\item \textbf{Using WHERE on numbers}
+	
+	\begin{itemize}
+		\item \textbf{BETWEEN} \\
+		This function impose that results have to be in an inclusive range of values. The syntax is: 
+		
+		\begin{center}
+			WHERE column\_name BETWEEN x AND y $/x,y\in\Re$
+		\end{center}
+		
+		In fact, the command BETWEEN is the result of a combination of conditions (sth >= x AND sth <= y) and combine math operators and logic operators can give us every modification of BETWEEN that we could need.
+		
+		\item \textbf{Logic operators: AND and OR}
+		\item \textbf{IN}\\
+		Instead of using several OR sentences, we could use the command IN to sum up those sentences. For example, if we type: 
+		
+		\begin{center}
+			\begin{minipage}{.3\linewidth}
+				WHERE column\_name = 3 \\
+				OR column\_name = 6 \\
+				OR column\_name = 9 \\
+				OR column\_name = 12 
+			\end{minipage}
+		\end{center}
+		
+		Whose result would be the rows where column\_name = 3, 6, 9 or 12; we could sum up the previous code using IN in this way:
+		
+		\begin{center}
+			WHERE column\_name IN (3,6,9,12)
+		\end{center}
+		
+		Likewise, you could use NOT IN, to obtain the rows where column\_name $\ne$ 3, 6, 9 and 12. In fact, we could add NOT in any condition to reverse its meaning.
+		
+		\item \textbf{An interesting application of \%}
+		
+		We'll explain this with an example. If you had a table which has one column with the months of the year and you wanted to select only the rows with even months, how would you do it? One way to solve this problem is to use the operator \% in the next way: 
+		
+		\begin{center}
+			WHERE column\_name\_months \% 2 = 0
+		\end{center}
+		
+		\color{blue}Note. \color{black}In Oravle the operator \% is not used, instead of it, you can use the function MOD().
+	\end{itemize}
+	
+	\item \textbf{Using WHERE on Text}
+	
+	When you type text in your code, you will have to type it between simple quotes because this is the way in which the SQL software difference between simple text (part of the data) and column names. This rule applies to every text operation. \\
+	
+	If you forget this and type the text without simple quotes, the programm will send you an error because he won't find a column with that name (unless you, casually, got a column with the same name of the value, which is not usual and, even if it was, the code wouldn't do what you want, so it will be even a bigger problem).
+	
+	\begin{itemize}
+		\item \textbf{The length() function}
+		
+		In a text between single quotes (hereinafter "string"), we can use this function to calculate the number of characters and get it back like the result. In this way, if we apply LENGTH(column\_name) in a column with strings, we will receive a column in which each row is the number of characters of one of them.
+		
+		\item \textbf{Wildcards and LIKE}
+		
+		In a string, \% is a wildcard which represents any number of characters of any type and \_ is a wildcard which represents any character (but only one character), they are very used with the function LIKE, which let you look for any word which satisfies a certain condition. For example, let's look for every string which starts with A, its third character is z and whose last letter is s; the sentence we would have to type in our script would be:
+		
+		\begin{center}
+			WHERE column\_name\_strings LIKE 'A\_z\%s'
+		\end{center}
+				
+		There are other handy functions like INSTR, SUBSTR and REPLACE that would be good to know, but we'll explain them later to do this piece of lesson shorter.\\
+		
+		To conclude this part, it's important to say that sometimes research on regular expressions related to strings could be useful to solve problems, so feel free to research on your own like a complementary activity to grow like a programmer.
+		
+	\end{itemize}
+
+	\item \textbf{Using WHERE on booleans}
+	
+	In general, you can use true/false or 1/0 to indicate the result of a boolean operation. There is an exception: SQLite don't allow the use of true/false, so for your own sake it would be a good idea to get used to the 1/0 manner.
+	
+	Another important thing to know is that you are not forced to write =1 or =true in a sentence if you don't want to, since, behind the scenes, every WHERE condition boils down to a boolean expression. For example, typing
+	
+	\begin{center}
+		WHERE column\_name=1 ...
+	\end{center}
+	is equivalent to type:
+	\begin{center}
+		WHERE column\_name ...
+	\end{center}
+	
+	Otherwise, you must explicitly type =0 or =false to type false conditions, or so it could look... In fact, you can add a NOT particle before the name of the column and it will be the same as type =0 or =false (because you are reversing the simple way to type a true condition). Continuing with the previous example:
+	
+	\begin{center}
+		WHERE column\_name=0 ...
+	\end{center}
+	is equivalent to type:
+	\begin{center}
+		WHERE NOT column\_name ...
+	\end{center}
+	
+	\item \textbf{Handling NULL}
+
+\end{itemize}
+
+\end{document}
+
